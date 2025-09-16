@@ -1,7 +1,8 @@
-import CustomSelect from "./components/select";
+"use server";
 import "./styles/globals.css";
+import Noteform from "./components/noteform";
 
-export default function Home() {
+export default async function Home() {
   const locations: string[] = [
     "Select an Item",
     "New York",
@@ -17,8 +18,12 @@ export default function Home() {
   ];
 
   return (
-    <form className="max-w-md mx-auto p-4 bg-white rounded shadow">
-      <CustomSelect items={locations} />
-    </form>
+    <>
+      <div className="max-w-md mx-auto">
+        <h1 className="text-center text-black">Welcome to My Website</h1>
+
+        <Noteform locations={locations} />
+      </div>
+    </>
   );
 }

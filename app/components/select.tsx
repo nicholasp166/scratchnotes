@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef } from "react";
 import React from "react";
 
 interface Dropdown {
   items: string[];
 }
 
-const Dropdown: React.FC<Dropdown> = ({ items }) => {
+const Dropdown = forwardRef<HTMLButtonElement, Dropdown>(({ items }, ref) => {
   const [open, setOpen] = useState(false);
   const [selText, setselText] = useState("Select an Item");
   const boxRef = useRef<HTMLDivElement>(null);
@@ -40,15 +40,16 @@ const Dropdown: React.FC<Dropdown> = ({ items }) => {
       <div className="relative text-black">
         <button
           type="button"
-          className="px-4 py-2 bg-white border border-gray-300 rounded hover:outline hover:outline-blue-500 hover:outline-offset-2 transition"
+          className="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-blue-500 hover:text-white transition"
           onClick={handleButtonClick}
           value={selText}
+          ref={ref}
         >
           {selText}
         </button>
         <div
           ref={boxRef}
-          className={`absolute left-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-10 ${
+          className={` absolute left-0 w-48 bg-white border border-gray-300 rounded shadow-lg z-10 ${
             open ? "opacity-100 visible" : "opacity-0 invisible"
           }`}
         >
@@ -56,7 +57,7 @@ const Dropdown: React.FC<Dropdown> = ({ items }) => {
             selText != location ? (
               <div
                 key={index}
-                className="hover:bg-gray-200 transition"
+                className="p-1 hover:bg-blue-500 hover:text-white transition"
                 onClick={() => handleItemClick({ location: location })}
               >
                 {location}
@@ -67,6 +68,7 @@ const Dropdown: React.FC<Dropdown> = ({ items }) => {
       </div>
     </>
   );
-};
+});
 
+Dropdown.displayName = "Dropdown";
 export default React.memo(Dropdown);
