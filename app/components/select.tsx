@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, forwardRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import React from "react";
 
 interface Dropdown {
   items: string[];
+  selRef: string;
+  setSelRef: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Dropdown = forwardRef<HTMLButtonElement, Dropdown>(({ items }, ref) => {
+const Dropdown = ({ items, selRef, setSelRef }: Dropdown) => {
   const [open, setOpen] = useState(false);
   const [selText, setselText] = useState("Select an Item");
   const boxRef = useRef<HTMLDivElement>(null);
@@ -28,6 +30,7 @@ const Dropdown = forwardRef<HTMLButtonElement, Dropdown>(({ items }, ref) => {
 
   const handleItemClick = ({ location }: { location: string }) => {
     setselText(location);
+    setSelRef(location);
     setOpen((prev) => !prev);
   };
 
@@ -42,10 +45,9 @@ const Dropdown = forwardRef<HTMLButtonElement, Dropdown>(({ items }, ref) => {
           type="button"
           className="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-blue-500 hover:text-white transition"
           onClick={handleButtonClick}
-          value={selText}
-          ref={ref}
+          value={selRef}
         >
-          {selText}
+          {selRef}
         </button>
         <div
           ref={boxRef}
@@ -68,7 +70,7 @@ const Dropdown = forwardRef<HTMLButtonElement, Dropdown>(({ items }, ref) => {
       </div>
     </>
   );
-});
+};
 
 Dropdown.displayName = "Dropdown";
 export default React.memo(Dropdown);
