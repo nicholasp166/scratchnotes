@@ -9,7 +9,12 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-//import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $getNodeByKey } from "lexical";
+
+interface textItems {
+  textItem: string;
+  setTextItem: React.Dispatch<React.SetStateAction<string>>;
+}
 
 const theme = {
   // Theme styling goes here
@@ -34,7 +39,7 @@ function onError(error: unknown) {
   return null;
 }*/ //
 
-export default function Editor() {
+export default function Editor({ textItem, setTextItem }: textItems) {
   const initialConfig = {
     namespace: "MyEditor",
     theme,
@@ -47,7 +52,7 @@ export default function Editor() {
         contentEditable={
           <ContentEditable
             className="contentEditable"
-            aria-placeholder={"Enter some text..."}
+            aria-placeholder={textItem}
             placeholder={<div></div>}
           />
         }
@@ -57,7 +62,12 @@ export default function Editor() {
       <OnChangePlugin
         onChange={(editorState) => {
           editorState.read(() => {
-            console.log(editorState._nodeMap.get("2")?.getTextContent());
+            const node1 = $getNodeByKey("2");
+            if (node1) {
+              setTextItem(node1.getTextContent());
+            } else {
+              setTextItem("");
+            }
           });
         }}
       />

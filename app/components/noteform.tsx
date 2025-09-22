@@ -1,7 +1,7 @@
 "use client";
 
 import Editor from "./editor";
-import Dropdown from "./select";
+import Dropdown from "./dropdown";
 import { useState } from "react";
 
 interface Noteform {
@@ -12,6 +12,7 @@ interface Noteform {
 export default function Noteform({ locations, countries }: Noteform) {
   const [selRef1, setSelRef1] = useState("Select an Item");
   const [selRef2, setSelRef2] = useState("Select an Item");
+  const [textItem, setTextItem] = useState("Enter text...");
 
   function processData(e: React.FormEvent) {
     //form handler
@@ -21,6 +22,9 @@ export default function Noteform({ locations, countries }: Noteform) {
     }
     if (selRef2) {
       console.log(selRef2);
+    }
+    if (textItem) {
+      console.log(textItem);
     }
   }
 
@@ -34,7 +38,7 @@ export default function Noteform({ locations, countries }: Noteform) {
       {selRef1 && selRef1 != "Select an Item" ? (
         <Dropdown items={locations} selRef={selRef2} setSelRef={setSelRef2} />
       ) : null}
-      <Editor />
+      <Editor textItem={textItem} setTextItem={setTextItem} />
 
       <button
         type="submit"
