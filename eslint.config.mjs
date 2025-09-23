@@ -20,6 +20,11 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  {
+    rules: {
+      curly: ["off"], // disables forcing braces around if/else
+    },
+  },
 ];
 
 export default eslintConfig;

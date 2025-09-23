@@ -9,7 +9,10 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { $getNodeByKey } from "lexical";
+import { $createTextNode, $getNodeByKey, $getRoot } from "lexical";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $createHeadingNode } from "@lexical/rich-text";
+import { HeadingNode } from "@lexical/rich-text";
 
 interface textItems {
   textItem: string;
@@ -39,15 +42,37 @@ function onError(error: unknown) {
   return null;
 }*/ //
 
+//this is pretty much the header, i need to set up the whole top bar now
+function MyHeadingPlugin() {
+  const [editor] = useLexicalComposerContext();
+
+  //onclick event to
+  const onClick = () => {
+    editor.update(() => {
+      const root = $getRoot();
+      root.append(
+        $createHeadingNode("h1").append(
+          $createTextNode("Hello world").setFormat("bold")
+        )
+      );
+    });
+  };
+
+  //will need to set up button component to handle functions
+  return <button onClick={onClick}>Heading</button>;
+}
+
 export default function Editor({ textItem, setTextItem }: textItems) {
   const initialConfig = {
     namespace: "MyEditor",
     theme,
     onError,
+    nodes: [HeadingNode],
   };
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
+      <MyHeadingPlugin />
       <RichTextPlugin
         contentEditable={
           <ContentEditable
