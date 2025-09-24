@@ -9,7 +9,14 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { $createTextNode, $getNodeByKey, $getRoot } from "lexical";
+import {
+  $createTextNode,
+  $getNodeByKey,
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+  $isTextNode,
+} from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createHeadingNode } from "@lexical/rich-text";
 import { HeadingNode } from "@lexical/rich-text";
@@ -22,32 +29,37 @@ interface textItems {
 const theme = {
   // Theme styling goes here
   //...
+  text: {
+    bold: "font-bold",
+  },
 };
 function onError(error: unknown) {
   console.error(error);
 }
 
-/*function MyOnChangePlugin(props: {
-  //takes in onchange editor
-  onChange: (editorState: EditorState) => void;
-}): null {
-  const [editor] = useLexicalComposerContext(); //essential part for hook
-  const { onChange } = props;
-  useEffect(() => {
-    return editor.registerUpdateListener(({ editorState }) => {
-      //registers editor state and returns it
-      onChange(editorState);
-    });
-  }, [onChange, editor]);
-  return null;
-}*/ //
+interface BProps {
+  name: string;
+  functionName: () => void;
+}
+
+function Button({ name, functionName }: BProps) {
+  return (
+    <button
+      type="button"
+      className="border rounded-lg p-1"
+      onClick={functionName}
+    >
+      <strong>{name}</strong>{" "}
+    </button>
+  );
+}
 
 //this is pretty much the header, i need to set up the whole top bar now
 function MyHeadingPlugin() {
   const [editor] = useLexicalComposerContext();
 
   //onclick event to
-  const onClick = () => {
+  const boldH1Text = () => {
     editor.update(() => {
       const root = $getRoot();
       root.append(
@@ -57,9 +69,46 @@ function MyHeadingPlugin() {
       );
     });
   };
+  const logSelectedText = () => {
+    editor.update(() => {
+      const selection = $getSelection();
+
+      if ($isRangeSelection(selection)) {
+        const nodes = selection.getNodes();
+        const selectedText = selection.getTextContent();
+        //prettier-ignore
+        const points = selection.getStartEndPoints();
+        const positions: number[] = [];
+
+        //prints out start and end
+        points?.forEach((obj1) => {
+          positions.push(obj1.offset);
+        });
+
+        console.log(positions);
+
+        nodes.forEach((node) => {
+          //cursed bitwise operations, time to crack open the C textbook 💀💀
+          if ($isTextNode(node) && (node.getFormat() & 1) == 0) {
+            console.log(selectedText);
+            node.setFormat("bold"); // ✅ Apply bold formatting
+          } else if ($isTextNode(node)) {
+            node.setFormat(node.getFormat() & ~1);
+          }
+        });
+      } else {
+        console.log("No text selected");
+      }
+    });
+  };
 
   //will need to set up button component to handle functions
-  return <button onClick={onClick}>Heading</button>;
+  return (
+    <>
+      <Button name="H" functionName={boldH1Text} />
+      <Button name="H2" functionName={logSelectedText} />
+    </>
+  );
 }
 
 export default function Editor({ textItem, setTextItem }: textItems) {
@@ -74,13 +123,7 @@ export default function Editor({ textItem, setTextItem }: textItems) {
     <LexicalComposer initialConfig={initialConfig}>
       <MyHeadingPlugin />
       <RichTextPlugin
-        contentEditable={
-          <ContentEditable
-            className="contentEditable"
-            aria-placeholder={textItem}
-            placeholder={<div></div>}
-          />
-        }
+        contentEditable={<ContentEditable className="contentEditable" />}
         ErrorBoundary={LexicalErrorBoundary}
       />
       <HistoryPlugin />

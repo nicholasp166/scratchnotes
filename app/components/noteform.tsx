@@ -10,8 +10,10 @@ interface Noteform {
 }
 
 export default function Noteform({ locations, countries }: Noteform) {
-  const [selRef1, setSelRef1] = useState("Select an Item");
-  const [selRef2, setSelRef2] = useState("Select an Item");
+  //const [selRef1, setSelRef1] = useState("Select an Item");
+  //const [selRef2, setSelRef2] = useState("Select an Item");
+  const [selRef1, setSelRef1] = useState("United States");
+  const [selRef2, setSelRef2] = useState("New York");
   const [textItem, setTextItem] = useState("Enter text...");
 
   type formObj = {
