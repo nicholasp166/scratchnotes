@@ -85,15 +85,22 @@ function MyHeadingPlugin() {
           positions.push(obj1.offset);
         });
 
-        console.log(positions);
+        // console.log(positions);
 
         nodes.forEach((node) => {
           //cursed bitwise operations, time to crack open the C textbook 💀💀
-          if ($isTextNode(node) && (node.getFormat() & 1) == 0) {
-            console.log(selectedText);
-            node.setFormat("bold"); // ✅ Apply bold formatting
-          } else if ($isTextNode(node)) {
-            node.setFormat(node.getFormat() & ~1);
+          if ($isTextNode(node)) {
+            //prettier-ignore
+            const bma = node.splitText(positions[0],positions[1]);
+            bma.forEach((tn) => {
+              if (tn.__text == selectedText && (tn.getFormat() & 1) == 0) {
+                tn.setFormat("bold");
+              } else if (tn) {
+                if (selectedText.includes(tn.getTextContent())) {
+                  tn.setFormat(tn.getFormat() & ~1);
+                }
+              }
+            });
           }
         });
       } else {
@@ -106,7 +113,7 @@ function MyHeadingPlugin() {
   return (
     <>
       <Button name="H" functionName={boldH1Text} />
-      <Button name="H2" functionName={logSelectedText} />
+      <Button name="B" functionName={logSelectedText} />
     </>
   );
 }
